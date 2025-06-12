@@ -368,7 +368,7 @@ public:
 	}
 
 	// Function to export the graph to a PNG image using Graphviz
-	void export_to(const std::string& filename, const std::string& engine = "dot", size_t dpi = 300) const {
+	void export_to_png(const std::string& filename, const std::string& engine = "dot", size_t dpi = 300) const {
 
 		// NOTE: This is possible to define all nodes and edges at once
 		// node [shape=ellipse, style=filled, fillcolor=lightblue];
