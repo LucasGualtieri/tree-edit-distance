@@ -236,8 +236,6 @@ public:
 
 	void addEdge(const Vertex& u, const Vertex& v) {
 
-		if (hasEdge({u, v})) return;
-
 		if (weighted) {
 			throw std::runtime_error("You must pass the weight of the edge");
 		}

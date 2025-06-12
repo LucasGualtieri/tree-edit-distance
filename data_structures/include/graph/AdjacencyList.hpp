@@ -18,38 +18,19 @@ public:
 	AdjacencyList() : isWeighted(false), isDirected(false) {}
 
 	void addEdge(const Vertex& u, const Vertex& v, float weight = 1.0) override {
+
 		if (!isWeighted) weight = 1.0;
 
-		// Add the edge u -> v only if it doesn't already exist
-		auto& neighbors = adjList[u];
-		bool edgeExists = false;
-		for (const auto& neighbor : neighbors) {
-			if (neighbor.first == v) {
-				edgeExists = true;
-				break;
-			}
-		}
-		if (!edgeExists) {
-			neighbors.emplace_back(v, weight);
-		}
+		// Directly add the edge u -> v
+		adjList[u].emplace_back(v, weight);
 
 		// Add vertices to the vertex set
 		vertexSet.insert(u);
 		vertexSet.insert(v);
 
-		// For undirected graphs, add the edge v -> u as well
+		// For undirected graphs, add the reverse edge v -> u
 		if (!isDirected) {
-			auto& reverseNeighbors = adjList[v];
-			edgeExists = false;
-			for (const auto& neighbor : reverseNeighbors) {
-				if (neighbor.first == u) {
-					edgeExists = true;
-					break;
-				}
-			}
-			if (!edgeExists) {
-				reverseNeighbors.emplace_back(u, weight);
-			}
+			adjList[v].emplace_back(u, weight);
 		}
 	}
 
