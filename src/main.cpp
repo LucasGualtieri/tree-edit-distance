@@ -4,9 +4,9 @@
 #include <filesystem>
 
 #include "tree_generation.cpp"
-#include "../data_structures/include/graph/graph.hpp"
-#include "../data_structures/include/list/linearList.hpp"
-#include "../data_structures/utils/Pair.hpp"
+#include "../external/cpp-datastructures/include/utils/pair.hpp"
+#include "../external/cpp-datastructures/include/graph/graph.hpp"
+#include "../external/cpp-datastructures/include/list/linear_list.hpp"
 
 // clear && g++ -std=c++23 src/main.cpp && ./a.out
 
@@ -45,14 +45,27 @@ int table(int i) {
 }
 
 // NOTE: Dummy Class
-struct Log { void operator+=(Log a); };
+struct Log {
+
+    void operator+=(Log a) {
+		
+	}
+
+    bool operator==(const Log& other) const { return true; }
+
+    bool operator<(const Log& other) const { return true; }
+
+    bool operator>(const Log& other) const {
+        return !(*this < other) && !(*this == other);
+    }
+};
 
 Log Alg1(Graph T1, Graph T2) { return {}; }
 Log Alg2(Graph T1, Graph T2) { return {}; }
 
-void runTreeExperiment(const size_t& n, const string& name) {
+void runTreeExperiment(const size_t& n, const TreeType& type) {
 
-	const string filePath = DATA_DIR + "/" + name;
+	const string filePath = DATA_DIR + "/" + to_string(type);
 
 	LinearList<Pair<Log, Log>> data;
 
@@ -124,11 +137,11 @@ int main() {
 		// TreeType::Shallow,
 	});
 
-	runTreeExperiment(n, "Binary");
-	// runTreeExperiment(n, "Linear");
-	// runTreeExperiment(n, "Star");
-	// runTreeExperiment(n, "Random");
-	// runTreeExperiment(n, "Shallow");
+	runTreeExperiment(n, TreeType::Binary);
+	// runTreeExperiment(n, TreeType::Linear);
+	// runTreeExperiment(n, TreeType::Star);
+	// runTreeExperiment(n, TreeType::Random);
+	// runTreeExperiment(n, TreeType::Shallow);
 
 	return 0;
 }

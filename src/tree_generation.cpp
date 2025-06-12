@@ -1,27 +1,23 @@
 #include <random>
 #include <cmath>
+#include <unordered_map>
 
-#include "../data_structures/include/graph/graph.hpp"
-#include "../data_structures/include/graph/graph_builder.hpp"
+#include "../external/cpp-datastructures/include/graph/graph.hpp"
+#include "../external/cpp-datastructures/include/graph/graph_builder.hpp"
 
 enum class TreeType { Binary, Linear, Star, Random, Shallow };
 
-std::string to_string(TreeType type) {
+std::string to_string(const TreeType& type) {
 
-	switch (type) {
-		case TreeType::Binary:
-			return "Binary";
-		case TreeType::Linear:
-			return "Linear";
-		case TreeType::Star:
-			return "Star";
-		case TreeType::Random:
-			return "Random";
-		case TreeType::Shallow:
-			return "Shallow";
-		default:
-			return "Unknown";
-	}
+	const static std::unordered_map<TreeType, std::string> table = {
+		{ TreeType::Binary,	 "Binary" },
+		{ TreeType::Linear,	 "Linear" },
+		{ TreeType::Star,	 "Star" },
+		{ TreeType::Random,	 "Random" },
+		{ TreeType::Shallow, "Shallow" },
+	};
+
+	return table.at(type);
 }
 
 Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::AdjacencyList) {
@@ -29,13 +25,18 @@ Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::A
 	using namespace std;
 
 	Graph tree = GraphBuilder()
-		.vertices(n)
-		.edges(n - 1)
+		// NOTE: Isso é interessante, mas exige mudança nas estruturas
+		// .vertices(n)
+		// .edges(n - 1)
 		.directed()
 		.dataStructure(ds)
-		.build();
+	.build();
 
 	mt19937 rng(random_device{}());
+
+	for (int i = 0; i < n; i++) {
+		tree.addVertex(i);
+	}
 
 	switch (type) {
 
@@ -103,3 +104,4 @@ Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::A
 
 	return tree;
 }
+
