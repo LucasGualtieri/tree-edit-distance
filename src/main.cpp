@@ -1,10 +1,15 @@
 #include <iostream>
+
 #include <format>
 #include <string>
-#include <filesystem>
 
 #include "tree_generation.cpp"
-#include "../external/cpp-datastructures/include/utils/pair.hpp"
+
+#include "../include/log.hpp"
+#include "../include/utils.hpp"
+#include "../include/heuristic.hpp"
+#include "../include/progress_bar.hpp"
+#include "../include/zhang_shasha.hpp"
 #include "../external/cpp-datastructures/include/graph/graph.hpp"
 #include "../external/cpp-datastructures/include/list/linear_list.hpp"
 
@@ -14,60 +19,38 @@ using namespace std;
 
 const string DATA_DIR = "data";
 
-//NOTE: Pensar num nome melhor.
-//NOTE: Arrumar os valores
-int table(int i) {
+void generate_trees(const size_t&, const LinearList<TreeType>&);
 
-	switch(i) {
-		case 3:
-			return 30;
-		case 4:
-			return 30;
-		case 5:
-			return 30;
-		case 6:
-			return 30;
-		case 7:
-			return 30;
-		case 8:
-			return 30;
-		case 9:
-			return 30;
-		case 10:
-			return 30;
-		case 11:
-			return 30;
-		case 12:
-			return 30;
-		default:
-			return 1;
-	}
+int repetitionCount(const int& i) {
+
+	static const std::unordered_map<int, int> repetitionMap = {
+		{3, 30},
+		{4, 30},
+		{5, 10},
+		{6, 10},
+		{7, 8},
+		{8, 5},
+		{9, 5},
+		{10, 3},
+		{11, 2},
+		{12, 2}
+	};
+
+	auto it = repetitionMap.find(i);
+	if (it != repetitionMap.end()) return it->second;
+
+	return 1; // default para casos não mapeados
 }
-
-// NOTE: Dummy Class
-struct Log {
-
-    void operator+=(Log a) {
-		
-	}
-
-    bool operator==(const Log& other) const { return true; }
-
-    bool operator<(const Log& other) const { return true; }
-
-    bool operator>(const Log& other) const {
-        return !(*this < other) && !(*this == other);
-    }
-};
-
-Log Alg1(Graph T1, Graph T2) { return {}; }
-Log Alg2(Graph T1, Graph T2) { return {}; }
 
 void runTreeExperiment(const size_t& n, const TreeType& type) {
 
 	const string filePath = DATA_DIR + "/" + to_string(type);
 
-	LinearList<Pair<Log, Log>> data;
+	const size_t totalPairs = (n - 2) * (n - 1) / 2;
+
+	vector<pair<Log, Log>> data;
+	data.reserve(totalPairs);   // optional but avoids reallocations
+	size_t step = 0;
 
 	for (int i = 3; i <= n; i++) {
 
@@ -78,56 +61,37 @@ void runTreeExperiment(const size_t& n, const TreeType& type) {
 			Graph T1 = Graph::import_from_binary(format("{}/t1_2^{}_2^{}.bin", filePath, i, j));
 			Graph T2 = Graph::import_from_binary(format("{}/t2_2^{}_2^{}.bin", filePath, i, j));
 
-			int teste = min(table(i), table(j));
+			int numRepetitions = min(repetitionCount(i), repetitionCount(j));
 
-			for (int k = 0; k < teste; k++) {
-				log1 += Alg1(T1, T2);
-				log2 += Alg2(T1, T2);
+			for (int k = 0; k < numRepetitions; k++) {
+				log1 += ZhangShasha(T1, T2);
+				log2 += Heuristic(T1, T2);
 			}
 
-			data += { log1, log2 };
+			log1.avg(numRepetitions);
+			log2.avg(numRepetitions);
+
+			progressBar(step++, 0, totalPairs, format("i: {}, j: {}, k: {}", i, j, numRepetitions));
+			data.push_back({ log1, log2 });
 		}
+	}
+
+	progressBar(step, 0, totalPairs);
+
+	for (auto [l1, l2] : data) {
+
+		cout << format("l1: {:.3f}s, TED: {}, T1: {}, T2: {}", l1.duration_secs, l1.edit_distance, l1.T1, l1.T2) << endl;
+		cout << format("l2: {:.3f}s, TED: {}, T1: {}, T2: {}", l2.duration_secs, l2.edit_distance, l2.T1, l2.T2) << endl;
+		cout << "-------------------------" << endl;
 	}
 
 	// saveDataToCSV(data);
 	// editDistance, timeTaken, memoryUsed, ...
 }
 
-//NOTE: Jogar isso pra utils.hpp
-void mkdir(const std::string& folderPath) {
-
-	if (!std::filesystem::exists(folderPath)) {
-		if (!std::filesystem::create_directory(folderPath)) {
-			throw runtime_error(format("Failed to create folder. \"{}\"\n", folderPath));
-		}
-	}
-}
-
-void generate_trees(const size_t& n, const LinearList<TreeType>& treeTypes) {
-
-	for (TreeType type : treeTypes) {
-
-		const string filePath = DATA_DIR + "/" + to_string(type);
-		mkdir(filePath);
-
-		for (int i = 3; i <= n; i++) {
-			for (int j = i; j <= n; j++) {
-
-				Graph T1 = generate_tree(pow(2, i), type);
-				Graph T2 = generate_tree(pow(2, i), type);
-
-				T1.export_to_binary(format("{}/t1_2^{}_2^{}.bin", filePath, i, j));
-				T2.export_to_binary(format("{}/t2_2^{}_2^{}.bin", filePath, i, j));
-			}
-		}
-
-		cout << format("All {} trees were successfully generated!", to_string(type)) << endl;
-	}
-}
-
 int main() {
-	
-	size_t n = 15;
+
+	size_t n = 3;
 
 	generate_trees(n, {
 		// TreeType::Binary,
@@ -144,4 +108,26 @@ int main() {
 	// runTreeExperiment(n, TreeType::Shallow);
 
 	return 0;
+}
+
+void generate_trees(const size_t& n, const LinearList<TreeType>& treeTypes) {
+
+	for (TreeType type : treeTypes) {
+
+		const string filePath = DATA_DIR + "/" + to_string(type);
+		mkdir(filePath);
+
+		for (int i = 3; i <= n; i++) {
+			for (int j = i; j <= n; j++) {
+
+				Graph T1 = generate_tree(pow(2, i), type);
+				Graph T2 = generate_tree(pow(2, j), type);
+
+				T1.export_to_binary(format("{}/t1_2^{}_2^{}.bin", filePath, i, j));
+				T2.export_to_binary(format("{}/t2_2^{}_2^{}.bin", filePath, i, j));
+			}
+		}
+
+		cout << format("All {} trees were successfully generated!", to_string(type)) << endl;
+	}
 }

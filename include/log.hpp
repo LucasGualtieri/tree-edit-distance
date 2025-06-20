@@ -1,45 +1,29 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-#include "timer.hpp"
-#include <stdexcept>
-#include <tuple>
-#include <fstream>
-#include <format>
-#include "../DataStructures/include/list/linearList.hpp"
+#include <cstddef>
+struct Log {
 
-class Log {
-	
-	Timer timer;
-	LinearList<std::tuple<size_t, size_t, float, double>> log;
+    double duration_secs = 0;
+    int edit_distance = 0;
+	size_t T1, T2;
 
-  public:
+    Log& operator+=(const Log& other) {
+        duration_secs += other.duration_secs;
+        edit_distance += other.edit_distance;
+		T1 = other.T1;
+		T2 = other.T2;
+        return *this;
+    }
 
-	void registrar(const size_t& n, const size_t& m, const float& density) {
-		log += { n, m, density, timer.result() };
+	void avg(const int& numberOfRepetions) {
+		duration_secs /= numberOfRepetions;
+		edit_distance /= numberOfRepetions;
 	}
 
-	void startTimer() { timer.start(); }
-	void stopTimer() { timer.stop(); }
-
-	void save(const std::string& filename) {
-
-		std::ofstream outFile("data/" + filename + ".csv");
-
-		if (!outFile) {
-			throw std::runtime_error(format("Error: Could not open the file \"{}\" for writing.\n", filename));
-		}
-
-		outFile << "n, m, density, time\n";
-
-		for (const auto& t : log) {
-			outFile << std::format("{}, {}, {}, {:.3f}\n", get<0>(t), get<1>(t), get<2>(t), get<3>(t));
-		}
-
-		std::cout << format("The {}.csv file's been saved", filename) << std::endl;
-
-		outFile.close();
-	}
+    bool operator==(const Log& other) {
+		return this->duration_secs == other.duration_secs && this->edit_distance == other.edit_distance;
+    }
 };
 
 #endif
