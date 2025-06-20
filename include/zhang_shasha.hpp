@@ -92,6 +92,9 @@ inline Log ZhangShasha(const Graph& T1, const Graph& T2) {
 
 			int j_ = B.leftmost[j];
 
+			// base case for this forest
+			forestdist[i_][j_] = 0;
+
 			// Inicializa forestdist para floresta de i_..i e j_..j
 			for (int di = i_; di <= i; ++di) {
 				forestdist[di + 1][j_] = forestdist[di][j_] + 1;
@@ -104,6 +107,7 @@ inline Log ZhangShasha(const Graph& T1, const Graph& T2) {
 			for (int di = i_; di <= i; ++di) {
 
 				for (int dj = j_; dj <= j; ++dj) {
+
 
 					Vertex nodeA = A.postorder[di];
 					Vertex nodeB = B.postorder[dj];

@@ -1,3 +1,6 @@
+#ifndef TREE_GENERATION_HPP
+#define TREE_GENERATION_HPP 
+
 #include <random>
 #include <cmath>
 #include <unordered_map>
@@ -7,7 +10,7 @@
 
 enum class TreeType { Binary, Linear, Star, Random, Shallow };
 
-std::string to_string(const TreeType& type) {
+inline std::string to_string(const TreeType& type) {
 
 	const static std::unordered_map<TreeType, std::string> table = {
 		{ TreeType::Binary,	 "Binary" },
@@ -20,7 +23,7 @@ std::string to_string(const TreeType& type) {
 	return table.at(type);
 }
 
-Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::AdjacencyList) {
+inline Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::FastAdjacencyList) {
 
 	using namespace std;
 
@@ -105,3 +108,4 @@ Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = Graph::A
 	return tree;
 }
 
+#endif

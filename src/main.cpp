@@ -3,9 +3,8 @@
 #include <format>
 #include <string>
 
-#include "tree_generation.cpp"
-
 #include "../include/log.hpp"
+#include "../include/tree_generation.hpp"
 #include "../include/utils.hpp"
 #include "../include/heuristic.hpp"
 #include "../include/progress_bar.hpp"
@@ -31,9 +30,9 @@ int repetitionCount(const int& i) {
 		{7, 8},
 		{8, 5},
 		{9, 5},
-		{10, 3},
-		{11, 2},
-		{12, 2}
+		{10, 1},
+		{11, 1},
+		{12, 1}
 	};
 
 	auto it = repetitionMap.find(i);
@@ -68,9 +67,6 @@ void runTreeExperiment(const size_t& n, const TreeType& type) {
 				log2 += Heuristic(T1, T2);
 			}
 
-			log1.avg(numRepetitions);
-			log2.avg(numRepetitions);
-
 			progressBar(step++, 0, totalPairs, format("i: {}, j: {}, k: {}", i, j, numRepetitions));
 			data.push_back({ log1, log2 });
 		}
@@ -78,20 +74,14 @@ void runTreeExperiment(const size_t& n, const TreeType& type) {
 
 	progressBar(step, 0, totalPairs);
 
-	for (auto [l1, l2] : data) {
-
-		cout << format("l1: {:.3f}s, TED: {}, T1: {}, T2: {}", l1.duration_secs, l1.edit_distance, l1.T1, l1.T2) << endl;
-		cout << format("l2: {:.3f}s, TED: {}, T1: {}, T2: {}", l2.duration_secs, l2.edit_distance, l2.T1, l2.T2) << endl;
-		cout << "-------------------------" << endl;
-	}
-
-	// saveDataToCSV(data);
-	// editDistance, timeTaken, memoryUsed, ...
+	exportToCSV(data, format("results/raw/{}_data.csv", to_string(type)));
+	plot_TED_heatmap(to_string(type));
+	plot_TIME_heatmap(to_string(type));
 }
 
 int main() {
 
-	size_t n = 3;
+	size_t n = 10;
 
 	generate_trees(n, {
 		// TreeType::Binary,
@@ -102,10 +92,10 @@ int main() {
 	});
 
 	runTreeExperiment(n, TreeType::Binary);
-	// runTreeExperiment(n, TreeType::Linear);
-	// runTreeExperiment(n, TreeType::Star);
-	// runTreeExperiment(n, TreeType::Random);
-	// runTreeExperiment(n, TreeType::Shallow);
+	runTreeExperiment(n, TreeType::Star);
+	runTreeExperiment(n, TreeType::Random);
+	runTreeExperiment(n, TreeType::Shallow);
+	runTreeExperiment(n, TreeType::Linear);
 
 	return 0;
 }
