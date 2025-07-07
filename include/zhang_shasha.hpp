@@ -6,8 +6,8 @@
 #include <unordered_map>
 
 #include "log.hpp"
-#include "../external/cpp-datastructures/include/utils/timer.hpp"
-#include "../external/cpp-datastructures/include/graph/graph.hpp"
+#include "../cpp-datastructures/utils/timer.hpp"
+#include "../cpp-datastructures/graph/graph.hpp"
 
 struct TreeData {
 	std::vector<Vertex> postorder; // postorder[i] = nó na posição i

@@ -1,3 +1,6 @@
 [submodule "external/cpp-datastructures"]
 	path = external/cpp-datastructures
 	url = https://github.com/LucasGualtieri/cpp-datastructures
+[submodule "cpp-datastructures"]
+	path = cpp-datastructures
+	url = https://github.com/LucasGualtieri/cpp-datastructures

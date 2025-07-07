@@ -6,8 +6,10 @@
 #include <format>
 #include <filesystem>
 #include <fstream>
-#include <vector>
 #include <iomanip> // for std::fixed and std::setprecision
+
+#include "../cpp-datastructures/list/linear_list.hpp"
+#include "../cpp-datastructures/utils/pair.hpp"
 
 inline void mkdir(const std::string& folderPath) {
 
@@ -26,7 +28,7 @@ inline void clearscreen() {
     #endif
 }
 
-inline void exportToCSV(const std::vector<std::pair<Log, Log>>& data, const std::string& filename) {
+inline void exportToCSV(const LinearList<Pair<Log, Log>>& data, const std::string& filename) {
 
     std::ofstream file(filename);
 
@@ -38,7 +40,7 @@ inline void exportToCSV(const std::vector<std::pair<Log, Log>>& data, const std:
     file << "T1,T2,time_taken_t1,time_taken_t2,edit_distance_t1,edit_distance_t2\n";
 
     for (const auto& [log1, log2] : data) {
-        file << log1.T1 << ',' << log1.T2 << ',' 
+        file << log1.T1 << ',' << log1.T2 << ','
 			<< std::fixed << std::setprecision(4) << log1.duration_secs << ','
 			<< std::fixed << std::setprecision(4) << log2.duration_secs << ','
 			<< log1.edit_distance << ',' << log2.edit_distance << '\n';

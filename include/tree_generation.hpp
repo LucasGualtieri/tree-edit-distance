@@ -1,12 +1,12 @@
 #ifndef TREE_GENERATION_HPP
-#define TREE_GENERATION_HPP 
+#define TREE_GENERATION_HPP
 
 #include <random>
 #include <cmath>
 #include <unordered_map>
 
-#include "../external/cpp-datastructures/include/graph/graph.hpp"
-#include "../external/cpp-datastructures/include/graph/graph_builder.hpp"
+#include "../cpp-datastructures/graph/graph.hpp"
+#include "../cpp-datastructures/graph/graph_builder.hpp"
 
 enum class TreeType { Binary, Linear, Star, Random, Shallow };
 
@@ -57,7 +57,7 @@ inline Graph generate_tree(size_t n, TreeType type, Graph::DataStructures ds = G
 
 			for (size_t i = 1; i < n; i++) {
 				tree.addEdge(i - 1, i);
-			}	
+			}
 
 			break;
 		}

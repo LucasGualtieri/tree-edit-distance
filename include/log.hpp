@@ -32,6 +32,14 @@ struct Log {
 	bool operator==(const Log& other) const {
         return duration_secs == other.duration_secs && edit_distance == other.edit_distance;
     }
+
+	bool operator>(const Log& other) const {
+        return duration_secs == other.duration_secs && edit_distance == other.edit_distance;
+    }
+
+	bool operator<(const Log& other) const {
+        return duration_secs == other.duration_secs && edit_distance == other.edit_distance;
+    }
 };
 
 #endif

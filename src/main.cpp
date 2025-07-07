@@ -4,13 +4,14 @@
 #include <string>
 
 #include "../include/log.hpp"
-#include "../include/tree_generation.hpp"
 #include "../include/utils.hpp"
 #include "../include/heuristic.hpp"
 #include "../include/progress_bar.hpp"
 #include "../include/zhang_shasha.hpp"
-#include "../external/cpp-datastructures/include/graph/graph.hpp"
-#include "../external/cpp-datastructures/include/list/linear_list.hpp"
+#include "../include/tree_generation.hpp"
+#include "../cpp-datastructures/graph/graph.hpp"
+// #include "../cpp-datastructures/utils/pair.hpp"
+// #include "../cpp-datastructures/list/linear_list.hpp"
 
 // clear && g++ -std=c++23 src/main.cpp && ./a.out
 
@@ -47,8 +48,7 @@ void runTreeExperiment(const size_t& n, const TreeType& type) {
 
 	const size_t totalPairs = (n - 2) * (n - 1) / 2;
 
-	vector<pair<Log, Log>> data;
-	data.reserve(totalPairs);   // optional but avoids reallocations
+	LinearList<Pair<Log, Log>> data;
 	size_t step = 0;
 
 	for (int i = 3; i <= n; i++) {
@@ -65,10 +65,12 @@ void runTreeExperiment(const size_t& n, const TreeType& type) {
 			for (int k = 0; k < numRepetitions; k++) {
 				log1 += ZhangShasha(T1, T2);
 				log2 += Heuristic(T1, T2);
+				progressBar(step, 0, totalPairs, format("i: {}, j: {}, k: {}/{}", i, j, k, numRepetitions));
 			}
 
-			progressBar(step++, 0, totalPairs, format("i: {}, j: {}, k: {}", i, j, numRepetitions));
-			data.push_back({ log1, log2 });
+			step++;
+
+			data += { log1, log2 };
 		}
 	}
 
@@ -92,10 +94,10 @@ int main() {
 	});
 
 	runTreeExperiment(n, TreeType::Binary);
-	runTreeExperiment(n, TreeType::Star);
-	runTreeExperiment(n, TreeType::Random);
-	runTreeExperiment(n, TreeType::Shallow);
-	runTreeExperiment(n, TreeType::Linear);
+	// runTreeExperiment(n, TreeType::Star);
+	// runTreeExperiment(n, TreeType::Random);
+	// runTreeExperiment(n, TreeType::Shallow);
+	// runTreeExperiment(n, TreeType::Linear);
 
 	return 0;
 }
