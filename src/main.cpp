@@ -10,8 +10,6 @@
 #include "../include/zhang_shasha.hpp"
 #include "../include/tree_generation.hpp"
 #include "../cpp-datastructures/graph/graph.hpp"
-// #include "../cpp-datastructures/utils/pair.hpp"
-// #include "../cpp-datastructures/list/linear_list.hpp"
 
 // clear && g++ -std=c++23 src/main.cpp && ./a.out
 
@@ -19,28 +17,8 @@ using namespace std;
 
 const string DATA_DIR = "data";
 
+int repetitionCount(const int& i);
 void generate_trees(const size_t&, const LinearList<TreeType>&);
-
-int repetitionCount(const int& i) {
-
-	static const std::unordered_map<int, int> repetitionMap = {
-		{3, 30},
-		{4, 30},
-		{5, 10},
-		{6, 10},
-		{7, 8},
-		{8, 5},
-		{9, 5},
-		{10, 1},
-		{11, 1},
-		{12, 1}
-	};
-
-	auto it = repetitionMap.find(i);
-	if (it != repetitionMap.end()) return it->second;
-
-	return 1; // default para casos não mapeados
-}
 
 void runTreeExperiment(const size_t& n, const TreeType& type) {
 
@@ -122,4 +100,25 @@ void generate_trees(const size_t& n, const LinearList<TreeType>& treeTypes) {
 
 		cout << format("All {} trees were successfully generated!", to_string(type)) << endl;
 	}
+}
+
+int repetitionCount(const int& i) {
+
+	static const std::unordered_map<int, int> repetitionMap = {
+		{3, 30},
+		{4, 30},
+		{5, 10},
+		{6, 10},
+		{7, 8},
+		{8, 5},
+		{9, 5},
+		{10, 1},
+		{11, 1},
+		{12, 1}
+	};
+
+	auto it = repetitionMap.find(i);
+	if (it != repetitionMap.end()) return it->second;
+
+	return 1; // default para casos não mapeados
 }
